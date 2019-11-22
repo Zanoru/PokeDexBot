@@ -1,8 +1,8 @@
 import vk_api
 from vk_api.utils import get_random_id
 from vk_api.longpoll import VkLongPoll, VkEventType
-from data import find_pokemon
 import json
+from poki import get_pokemon_data
 
 vk_session = vk_api.VkApi(token='a2164ceb7b39703b7667f6c893dc4770b70773aa456799e0fd2abc18582c8b3bd1c94f6f90716fa8ef9fe')
 
@@ -52,3 +52,23 @@ for event in longpoll.listen():
                 message='Primary',
                 keyboard=keyboard
             )
+        else:
+            vk.messages.send(
+                user_id=event.user_id,
+                random_id=get_random_id(),
+                message='🚀Начинаем искать покемона в нашей базе данных...🚀'
+            )
+            data = get_pokemon_data(event.text.lower())
+            if data != 'Error':
+                vk.messages.send(
+                user_id=event.user_id,
+                random_id=get_random_id(),
+                message='💫Мы нашли покемона с этим именем!💫'
+            ) 
+            else:
+                vk.messages.send(
+                user_id=event.user_id,
+                random_id=get_random_id(),
+                message='😥Мы не можем найти такого покемона, попробуйте еще раз!😥'
+            )
+            
