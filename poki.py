@@ -9,12 +9,13 @@ def get_pokemon_data(name):
     req_data = req.json()
     
     pokemon_data = {
-        'id': req_data['id'],
+        '_id': req_data['id'],
         'name': req_data['name'],
-        'pokemonType': req_data['types'][0]['type']['name'],
         'height': req_data['height'],
+        'pokemonType': [el['type']['name'] for el in req_data['types']],
         'weight': req_data['weight'],
         'sprites': req_data['sprites']['front_default']
     }
     
     return pokemon_data
+
