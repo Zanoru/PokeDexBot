@@ -2,7 +2,10 @@ import vk_api
 from vk_api.utils import get_random_id
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.upload import VkUpload
+<<<<<<< HEAD
 import requests
+=======
+>>>>>>> d9d392fd61f03cfcb1947eb935dd943981668931
 import json
 from io import BytesIO
 from poki import get_pokemon_data
