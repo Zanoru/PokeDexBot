@@ -21,6 +21,39 @@ def get_button_text(label, color, payload=''):
     }
 
 
+def get_info_pokemon(data_pokemon):
+    pokemon_id = data_pokemon['_id']
+    pokemon_sprite = 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/{:03}.png'.format(pokemon_id)
+    file_img = requests.get(pokemon_sprite).content
+
+    with open('pokemon.png', 'wb') as f:
+        f.write(bytearray(file_img))
+
+    upload_server = vk.photos.getMessagesUploadServer()
+    photo_req = requests.post(upload_server['upload_url'],
+                              files={'photo': open('pokemon.png', 'rb')}).json()
+    photo = vk.photos.saveMessagesPhoto(
+        photo=photo_req['photo'],
+        server=photo_req['server'],
+        hash=photo_req['hash']
+    )[0]
+
+    pokemon_info_message = f"""
+    📌 Уникальный номер: {pokemon_id}
+    💬 Имя: {data_pokemon['name'].title()}
+    {get_pokemontype_emoji(data_pokemon['pokemonType'][-1])} Тип: {', '.join(data_pokemon.get('pokemonType')).title()}
+    📏 Рост: {data_pokemon.get('height') / 10} м
+    🗿 Вес: {data_pokemon.get('weight') / 10} кг
+                    """
+
+    vk.messages.send(
+        user_id=event.user_id,
+        random_id=get_random_id(),
+        message=pokemon_info_message,
+        attachment='photo' + str(photo['owner_id']) + '_' + str(photo['id']),
+    )
+
+
 keyboard = {
     'one_time': False,
     'buttons': [
@@ -32,7 +65,7 @@ keyboard = {
 }
 
 keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
-keyboard = str(keyboard.decode('utf-8'))
+keyboard: str = str(keyboard.decode('utf-8'))
 
 longpoll = VkLongPoll(vk_session)
 vk = vk_session.get_api()
@@ -47,38 +80,7 @@ for event in longpoll.listen():
             )
         elif event.text == 'Испытать удачу':
             data = get_random_pokemon()
-
-            if data != 'Error':
-                pokemon_id = data['_id']
-                pokemon_sprite = 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/{:03}.png'.format(pokemon_id)
-                file_img = requests.get(pokemon_sprite).content
-
-                with open('pokemon.png', 'wb') as f:
-                    f.write(bytearray(file_img))
-
-                upload_server = vk.photos.getMessagesUploadServer()
-                photo_req = requests.post(upload_server['upload_url'],
-                                          files={'photo': open('pokemon.png', 'rb')}).json()
-                photo = vk.photos.saveMessagesPhoto(
-                    photo=photo_req['photo'],
-                    server=photo_req['server'],
-                    hash=photo_req['hash']
-                )[0]
-                
-                pokemon_info_message = f"""
-📌 Уникальный номер: {pokemon_id}
-💬 Имя: {data['name'].title()}
-{get_pokemontype_emoji(data['pokemonType'][-1])} Тип: {', '.join(data.get('pokemonType')).title()}
-📏 Рост: {data.get('height') / 10} м
-🗿 Вес: {data.get('weight') / 10} кг
-                """
-                
-            vk.messages.send(
-                user_id=event.user_id,
-                random_id=get_random_id(),
-                message=pokemon_info_message,
-                attachment='photo' + str(photo['owner_id']) + '_' + str(photo['id']),
-            )
+            get_info_pokemon(data)
         else:
             vk.messages.send(
                 user_id=event.user_id,
@@ -89,36 +91,7 @@ for event in longpoll.listen():
             data = get_pokemon_data(event.text.lower())
 
             if data != 'Error':
-                pokemon_id = data['_id']
-                pokemon_sprite = 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/{:03}.png'.format(pokemon_id)
-                file_img = requests.get(pokemon_sprite).content
-
-                with open('pokemon.png', 'wb') as f:
-                    f.write(bytearray(file_img))
-
-                upload_server = vk.photos.getMessagesUploadServer()
-                photo_req = requests.post(upload_server['upload_url'],
-                                          files={'photo': open('pokemon.png', 'rb')}).json()
-                photo = vk.photos.saveMessagesPhoto(
-                    photo=photo_req['photo'],
-                    server=photo_req['server'],
-                    hash=photo_req['hash']
-                )[0]
-
-                pokemon_info_message = f"""
-💫 Мы нашли покемона с этим именем/номером 💫\n
-📌 Уникальный номер: {pokemon_id}
-💬 Имя: {data['name'].title()}
-{get_pokemontype_emoji(data['pokemonType'][-1])} Тип: {', '.join(data.get('pokemonType')).title()}
-📏 Рост: {data.get('height') / 10} м
-🗿 Вес: {data.get('weight') / 10} кг
-                """
-                vk.messages.send(
-                    user_id=event.user_id,
-                    random_id=get_random_id(),
-                    message=pokemon_info_message,
-                    attachment='photo' + str(photo['owner_id']) + '_' + str(photo['id'])
-                )
+                get_info_pokemon(data)
             else:
                 vk.messages.send(
                     user_id=event.user_id,
