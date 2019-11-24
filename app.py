@@ -51,38 +51,34 @@ for event in longpoll.listen():
                 message='🚀Начинаем искать покемона в нашей базе данных...🚀'
             )
             data = get_pokemon_data(event.text.lower())
-            
+
             if data != 'Error':
                 pokemon_id = data['_id']
                 pokemon_sprite = 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/{:03}.png'.format(pokemon_id)
                 file_img = requests.get(pokemon_sprite).content
-                
+
                 with open('pokemon.png', 'wb') as f:
                     f.write(bytearray(file_img))
 
                 upload_server = vk.photos.getMessagesUploadServer()
-                photo_req = requests.post(upload_server['upload_url'], files={'photo': open('pokemon.png', 'rb')}).json()
+                photo_req = requests.post(upload_server['upload_url'],
+                                          files={'photo': open('pokemon.png', 'rb')}).json()
                 photo = vk.photos.saveMessagesPhoto(
                     photo=photo_req['photo'],
                     server=photo_req['server'],
                     hash=photo_req['hash']
                 )[0]
                 vk.messages.send(
-                user_id=event.user_id,
-                random_id=get_random_id(),
-                message='Фото:',
-                attachment='photo'+str(photo['owner_id'])+'_'+str(photo['id'])
-                )
-                vk.messages.send(
                     user_id=event.user_id,
                     random_id=get_random_id(),
                     message=f'''💫Мы нашли покемона с этим именем/номером!💫
-                                {pokemon_id} - {data.get('name').title()}
-                                Type - {data.get('pokemonType')[0].title()}
-                                Average Height - {data.get('height') / 10} m
-                                Average Weight - {data.get('weight') / 10} kg
+                                {data.get('name').title()} - {pokemon_id:03}
+                                🀄Тип - {', '.join(data.get('pokemonType')).title()}
+                                📏Рост - {data.get('height') / 10} м
+                                🗿Вес - {data.get('weight') / 10} кг
                                 
                             ''',
+                    attachment='photo' + str(photo['owner_id']) + '_' + str(photo['id'])
                 )
             else:
                 vk.messages.send(
