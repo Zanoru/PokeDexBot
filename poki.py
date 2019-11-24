@@ -14,11 +14,12 @@ data = {
     "fighting": "👊",
     "rock": "🌚",
     "steel": "⚙️",
-    "ice": "🧊",
+    "ice": "❄",
     "ghost": "👻",
     "flying": "🐦",
     "dragon": "🐉",
-    "dark": "⚫"
+    "dark": "⚫",
+    "psychic": "🌀"
 }
 
 def get_pokemon_data(name):
