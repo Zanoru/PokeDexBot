@@ -65,7 +65,7 @@ keyboard = {
 }
 
 keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
-keyboard: str = str(keyboard.decode('utf-8'))
+keyboard = str(keyboard.decode('utf-8'))
 
 longpoll = VkLongPoll(vk_session)
 vk = vk_session.get_api()
