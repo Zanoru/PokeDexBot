@@ -5,7 +5,7 @@ from vk_api.upload import VkUpload
 import requests
 import json
 from io import BytesIO
-from poki import get_pokemon_data
+from poki import get_pokemon_data, get_pokemontype_emoji
 
 vk_session = vk_api.VkApi(token='a2164ceb7b39703b7667f6c893dc4770b70773aa456799e0fd2abc18582c8b3bd1c94f6f90716fa8ef9fe')
 
@@ -68,16 +68,19 @@ for event in longpoll.listen():
                     server=photo_req['server'],
                     hash=photo_req['hash']
                 )[0]
+
+                pokemon_info_message = f"""
+💫 Мы нашли покемона с этим именем/номером
+📌 Уникальный номер: {pokemon_id}
+💬 Имя: {data['name'].title()}
+{get_pokemontype_emoji(data['pokemonType'][-1])} Тип: {', '.join(data.get('pokemonType')).title()}
+📏 Рост: {data.get('height') / 10} м
+🗿 Вес: {data.get('weight') / 10} кг
+                """
                 vk.messages.send(
                     user_id=event.user_id,
                     random_id=get_random_id(),
-                    message=f'''💫Мы нашли покемона с этим именем/номером!💫
-                                {data.get('name').title()} - {pokemon_id:03}
-                                🀄Тип - {', '.join(data.get('pokemonType')).title()}
-                                📏Рост - {data.get('height') / 10} м
-                                🗿Вес - {data.get('weight') / 10} кг
-                                
-                            ''',
+                    message=pokemon_info_message,
                     attachment='photo' + str(photo['owner_id']) + '_' + str(photo['id'])
                 )
             else:

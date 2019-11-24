@@ -1,6 +1,26 @@
 import requests
 import json
 
+data = {
+    "normal": "🏷️",
+    "fire": "🔥",
+    "grass": "🌿",
+    "electric": "⚡",
+    "poison": "🤢",
+    "water": "🌊",
+    "bug": "🐛",
+    "fairy": "🧚",
+    "ground": "🌱",
+    "fighting": "👊",
+    "rock": "🌚",
+    "steel": "⚙️",
+    "ice": "🧊",
+    "ghost": "👻",
+    "flying": "🐦",
+    "dragon": "🐉",
+    "dark": "⚫"
+}
+
 def get_pokemon_data(name):
     req = requests.get(f'https://pokeapi.co/api/v2/pokemon/{name}/')
     if req.status_code != 200:
@@ -19,3 +39,5 @@ def get_pokemon_data(name):
     
     return pokemon_data
 
+def get_pokemontype_emoji(pokemonType):
+    return data[pokemonType]
