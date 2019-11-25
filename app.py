@@ -39,11 +39,11 @@ def get_info_pokemon(data_pokemon):
     )[0]
 
     pokemon_info_message = f"""
-    📌 Уникальный номер: {pokemon_id}
-    💬 Имя: {data_pokemon['name'].title()}
-    {get_pokemontype_emoji(data_pokemon['pokemonType'][-1])} Тип: {', '.join(data_pokemon.get('pokemonType')).title()}
-    📏 Рост: {data_pokemon.get('height') / 10} м
-    🗿 Вес: {data_pokemon.get('weight') / 10} кг
+📌 Уникальный номер: {pokemon_id}
+💬 Имя: {data_pokemon['name'].title()}
+{get_pokemontype_emoji(data_pokemon['pokemonType'][-1])} Тип: {', '.join(data_pokemon.get('pokemonType')).title()}
+📏 Рост: {data_pokemon.get('height') / 10} м
+🗿 Вес: {data_pokemon.get('weight') / 10} кг
                     """
 
     vk.messages.send(
@@ -58,7 +58,6 @@ keyboard = {
     'one_time': False,
     'buttons': [
         [
-            get_button_text(label='История запросов', color='secondary'),
             get_button_text(label='Испытать удачу', color='primary')
         ]
     ]
@@ -71,14 +70,7 @@ longpoll = VkLongPoll(vk_session)
 vk = vk_session.get_api()
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-        if event.text == 'История запросов':
-            vk.messages.send(
-                user_id=event.user_id,
-                random_id=get_random_id(),
-                message='🔎 Последнии n запросов 🔎',
-                keyboard=keyboard
-            )
-        elif event.text == 'Испытать удачу':
+        if event.text == 'Испытать удачу':
             data = get_random_pokemon()
             get_info_pokemon(data)
         else:
