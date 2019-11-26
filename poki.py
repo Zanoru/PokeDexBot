@@ -73,11 +73,14 @@ def log_user_history(user, text):
     if user not in history.keys():
         history[user] = [text]
     else:
-        history[user] += [text]
+        history[user].insert(0, text)
+
+    if len(history[user]) > 5:
+        history[user] = history[user][:5]
 
 
 def get_user_history(user):
     try:
-        return history[user][-1:-6:-1]
+        return history[user]
     except KeyError:
         return '😥 Список запросов пуст 😥'
