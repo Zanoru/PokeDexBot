@@ -23,6 +23,8 @@ data = {
     "psychic": "🌀"
 }
 
+history = {}
+
 def get_pokemon_data(name):
     req = requests.get(f'https://pokeapi.co/api/v2/pokemon/{name}/')
     if req.status_code != 200:
@@ -65,3 +67,17 @@ def get_random_pokemon():
 
 def get_pokemontype_emoji(pokemonType):
     return data[pokemonType]
+
+
+def log_user_history(user, text):
+    if user not in history.keys():
+        history[user] = [text]
+    else:
+        history[user] += [text]
+
+
+def get_user_history(user):
+    try:
+        return history[user][-1:-6:-1]
+    except KeyError:
+        return '😥 Список запросов пуст 😥'

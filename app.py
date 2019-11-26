@@ -5,7 +5,7 @@ from vk_api.upload import VkUpload
 import requests
 import json
 from io import BytesIO
-from poki import get_pokemon_data, get_pokemontype_emoji, get_random_pokemon
+from poki import get_pokemon_data, get_pokemontype_emoji, get_random_pokemon, log_user_history, get_user_history
 
 vk_session = vk_api.VkApi(token='a2164ceb7b39703b7667f6c893dc4770b70773aa456799e0fd2abc18582c8b3bd1c94f6f90716fa8ef9fe')
 
@@ -58,7 +58,8 @@ keyboard = {
     'one_time': False,
     'buttons': [
         [
-            get_button_text(label='Испытать удачу', color='primary')
+            get_button_text(label='Испытать удачу', color='primary'),
+            get_button_text(label='История запросов', color='secondary')
         ]
     ]
 }
@@ -73,6 +74,22 @@ for event in longpoll.listen():
         if event.text == 'Испытать удачу':
             data = get_random_pokemon()
             get_info_pokemon(data)
+        elif event.text == 'История запросов':
+            message='🔍 Ваша история запросов 🔍\n'
+            history=get_user_history(event.user_id)
+
+            if history == '😥 Список запросов пуст 😥':
+                message += f'\n{history}'
+            else:
+                for i in range(len(history)):
+                    message+=f'\n{i+1}: {history[i].title()}'
+
+            vk.messages.send(
+                user_id=event.user_id,
+                random_id=get_random_id(),
+                message=message,
+                keyboard=keyboard
+            )
         else:
             vk.messages.send(
                 user_id=event.user_id,
@@ -84,6 +101,7 @@ for event in longpoll.listen():
 
             if data != 'Error':
                 get_info_pokemon(data)
+                log_user_history(event.user_id, data['name'])
             else:
                 vk.messages.send(
                     user_id=event.user_id,
