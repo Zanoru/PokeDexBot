@@ -84,3 +84,13 @@ def get_user_history(user):
         return history[user]
     except KeyError:
         return '😥 Список запросов пуст 😥'
+        
+
+def get_pokemon_stats(pokemon):
+    req = requests.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon}/')
+    if req.status_code != 200:
+        return 'Error'
+    
+    data = {el['stat']['name']:el['base_stat'] for el in req.json()['stats']}
+    
+    return data
