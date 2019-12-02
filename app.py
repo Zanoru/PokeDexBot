@@ -7,7 +7,7 @@ import json
 from io import BytesIO
 from poki import get_pokemon_data, get_pokemontype_emoji, get_random_pokemon, log_user_history, get_user_history, get_pokemon_stats
 
-vk_session = vk_api.VkApi(token='a2164ceb7b39703b7667f6c893dc4770b70773aa456799e0fd2abc18582c8b3bd1c94f6f90716fa8ef9fe')
+vk_session = vk_api.VkApi(token='')
 
 
 def get_button_text(label, color, payload=''):
